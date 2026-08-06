@@ -1,0 +1,1 @@
+const Joi=require('joi'); const {isValidDate}=require('../utils/dateHelpers'); const d=Joi.string().custom((v,h)=>isValidDate(v)?v:h.error('date.format')).required(); module.exports={range:Joi.object({startDate:d,endDate:d})};

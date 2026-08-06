@@ -1,0 +1,14 @@
+const express = require('express');
+const controller = require('../controllers/incomeController');
+const { authenticate } = require('../middlewares/authenticate');
+const { validateRequest } = require('../middlewares/validateRequest');
+const schemas = require('../validation/incomeSchemas');
+const ReqType = require('../constants/reqTypes');
+const router = express.Router();
+router.use(authenticate);
+router.post('/', validateRequest(schemas.create, ReqType.BODY), controller.create);
+router.get('/', validateRequest(schemas.list, ReqType.QUERY), controller.list);
+router.get('/:id', validateRequest(schemas.id, ReqType.PARAMS), controller.getById);
+router.patch('/:id', validateRequest(schemas.id, ReqType.PARAMS), validateRequest(schemas.update, ReqType.BODY), controller.update);
+router.delete('/:id', validateRequest(schemas.id, ReqType.PARAMS), controller.delete);
+module.exports = router;

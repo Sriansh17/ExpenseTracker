@@ -1,0 +1,17 @@
+const express = require('express');
+const multer = require('multer');
+const controller = require('../controllers/expenseController');
+const { authenticate } = require('../middlewares/authenticate');
+const { validateRequest } = require('../middlewares/validateRequest');
+const schemas = require('../validation/expenseSchemas');
+const ReqType = require('../constants/reqTypes');
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 }, fileFilter: (_req, file, cb) => cb(null, ['image/jpeg', 'image/png', 'image/webp'].includes(file.mimetype)) });
+const router = express.Router();
+router.use(authenticate);
+router.post('/', validateRequest(schemas.create, ReqType.BODY), controller.create);
+router.get('/', validateRequest(schemas.list, ReqType.QUERY), controller.list);
+router.get('/:id', validateRequest(schemas.id, ReqType.PARAMS), controller.getById);
+router.patch('/:id', validateRequest(schemas.id, ReqType.PARAMS), validateRequest(schemas.update, ReqType.BODY), controller.update);
+router.delete('/:id', validateRequest(schemas.id, ReqType.PARAMS), controller.delete);
+router.post('/:id/receipt', validateRequest(schemas.id, ReqType.PARAMS), upload.single('receipt'), controller.attachReceipt);
+module.exports = router;

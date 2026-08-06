@@ -1,0 +1,13 @@
+const express = require('express');
+const controller = require('../controllers/categoryController');
+const { authenticate } = require('../middlewares/authenticate');
+const { validateRequest } = require('../middlewares/validateRequest');
+const schemas = require('../validation/categorySchemas');
+const ReqType = require('../constants/reqTypes');
+const router = express.Router();
+router.use(authenticate);
+router.get('/', controller.list);
+router.post('/', validateRequest(schemas.create, ReqType.BODY), controller.create);
+router.patch('/:id', validateRequest(schemas.id, ReqType.PARAMS), validateRequest(schemas.update, ReqType.BODY), controller.update);
+router.delete('/:id', validateRequest(schemas.id, ReqType.PARAMS), controller.delete);
+module.exports = router;

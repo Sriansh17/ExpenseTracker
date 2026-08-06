@@ -1,0 +1,30 @@
+{
+  "name": "expense-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Personal expense tracking API",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node --watch app.js",
+    "test": "node --test"
+  },
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "@google-cloud/storage": "^7.16.0",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "csv-stringify": "^6.5.2",
+    "express": "^5.1.0",
+    "google-auth-library": "^9.15.1",
+    "helmet": "^8.1.0",
+    "joi": "^17.13.3",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^2.0.2",
+    "node-cron": "^4.2.1",
+    "pdfkit": "^0.17.1",
+    "pg": "^8.16.3",
+    "uuid": "^11.1.0",
+    "winston": "^3.17.0"
+  }
+}

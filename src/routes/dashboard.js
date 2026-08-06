@@ -1,0 +1,10 @@
+const express = require('express');
+const controller = require('../controllers/dashboardController');
+const { authenticate } = require('../middlewares/authenticate');
+const { validateRequest } = require('../middlewares/validateRequest');
+const { charts } = require('../validation/dashboardSchemas');
+const router = express.Router();
+router.use(authenticate);
+router.get('/overview', controller.overview);
+router.get('/charts', validateRequest(charts, 'query'), controller.charts);
+module.exports = router;

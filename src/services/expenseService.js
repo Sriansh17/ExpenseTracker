@@ -12,6 +12,17 @@ async function verifyCategory(userId, categoryId) {
 
 async function create(userId, data) {
   await verifyCategory(userId, data.categoryId);
+
+  // Server-side deduplication: prevent duplicate (amount, date, user) entries
+  const { rows: existing } = await require('../config/db').query(
+    `SELECT id FROM expenses WHERE user_id = $1 AND amount = $2 AND expense_date = $3 AND deleted_at IS NULL LIMIT 1`,
+    [userId, data.amount, data.date]
+  );
+  if (existing.length > 0) {
+    // Already exists — return existing instead of creating duplicate
+    return { expense: await queries.findById(userId, existing[0].id) };
+  }
+
   const expense = await queries.create(userId, data);
   await queries.insertTags(expense.id, data.tags);
   return { expense: await queries.findById(userId, expense.id) };
@@ -24,6 +35,13 @@ async function getById(userId, id) {
 }
 
 async function list(userId, filters) {
+  // Convert month param to startDate/endDate range
+  if (filters.month && !filters.startDate && !filters.endDate) {
+    const [year, month] = filters.month.split('-').map(Number);
+    filters.startDate = `${year}-${String(month).padStart(2, '0')}-01`;
+    const lastDay = new Date(year, month, 0).getDate();
+    filters.endDate = `${year}-${String(month).padStart(2, '0')}-${lastDay}`;
+  }
   const result = await queries.list(userId, filters);
   return {
     expenses: result.rows,
@@ -36,6 +54,11 @@ async function update(userId, id, data) {
   if (!existing) throw new AppError('NOT_FOUND', 'Expense not found', 404);
   if (data.categoryId) await verifyCategory(userId, data.categoryId);
   await queries.update(userId, id, data);
+  // Auto-learn: save merchant→category mapping when user changes category
+  if (data.categoryId && existing.merchant) {
+    const merchantQueries = require('../queries/merchantQueries');
+    await merchantQueries.upsert(userId, existing.merchant, data.categoryId).catch(() => {});
+  }
   if (data.tags) {
     await queries.deleteTagsByExpenseId(id);
     await queries.insertTags(id, data.tags);

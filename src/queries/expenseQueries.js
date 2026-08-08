@@ -1,13 +1,13 @@
 const db = require('../config/db');
 
-const baseSelect = `SELECT e.*, c.name AS category_name,
+const baseSelect = `SELECT e.*, e.merchant, c.name AS category_name,
   COALESCE((SELECT json_agg(et.tag ORDER BY et.tag) FROM expense_tags et WHERE et.expense_id = e.id), '[]') AS tags
   FROM expenses e JOIN categories c ON c.id = e.category_id`;
 const findById = async (userId, id) => (await db.query(
   `${baseSelect} WHERE e.user_id = $1 AND e.id = $2 AND e.deleted_at IS NULL`, [userId, id])).rows[0] || null;
 const create = async (userId, data) => (await db.query(
-  `INSERT INTO expenses (user_id, category_id, amount, expense_date, notes) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-  [userId, data.categoryId, data.amount, data.date, data.notes || null])).rows[0];
+  `INSERT INTO expenses (user_id, category_id, amount, expense_date, notes, merchant) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+  [userId, data.categoryId, data.amount, data.date, data.notes || null, data.merchant || null])).rows[0];
 const insertTags = async (expenseId, tags = []) => {
   for (const tag of tags) await db.query('INSERT INTO expense_tags (expense_id, tag) VALUES ($1, $2) ON CONFLICT DO NOTHING', [expenseId, tag]);
 };

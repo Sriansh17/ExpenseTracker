@@ -11,6 +11,7 @@ const expenseRoutes = require('./src/routes/expenses');
 const incomeRoutes = require('./src/routes/incomes');
 const dashboardRoutes = require('./src/routes/dashboard');
 const merchantRoutes = require('./src/routes/merchants');
+const budgetRoutes = require('./src/routes/budget');
 const healthRoutes = require('./src/routes/health');
 
 const app = express();
@@ -29,6 +30,7 @@ app.use('/api/expenses', expenseRoutes);
 app.use('/api/incomes', incomeRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/merchants', merchantRoutes);
+app.use('/api/budget', budgetRoutes);
 app.use('/api/health', healthRoutes);
 
 app.get('/', (_req, res) => res.json({ code: 'OK', message: 'Expense Tracker API' }));

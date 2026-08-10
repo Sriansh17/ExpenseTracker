@@ -38,9 +38,9 @@ app.get('/', (_req, res) => res.json({ code: 'OK', message: 'Scout API' }));
 // Version check endpoint for in-app updates
 app.get('/api/version', (_req, res) => res.json({
   code: 'OK',
-  latest: '1.1.0',
+  latest: '1.2.0',
   url: 'https://github.com/Sriansh17/ExpenseTrackerApp/releases/latest/download/app-release.apk',
-  notes: 'Google-only login, fixed merchant dedup, update banner'
+  notes: 'Credits now show in Received, Google-only login'
 }));
 
 app.use(errorHandler);

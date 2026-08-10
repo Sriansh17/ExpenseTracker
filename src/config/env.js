@@ -7,7 +7,8 @@ const schema = Joi.object({
   JWT_SECRET: Joi.string().min(32).required(),
   GCS_BUCKET: Joi.string().min(1).required(),
   GCS_PROJECT_ID: Joi.string().optional(),
-  CORS_ORIGIN: Joi.string().default('*')
+  CORS_ORIGIN: Joi.string().default('*'),
+  GOOGLE_CLIENT_ID: Joi.string().optional()
 }).unknown(true);
 
 function loadEnv(source = process.env) {
@@ -22,7 +23,8 @@ function loadEnv(source = process.env) {
     jwtSecret: value.JWT_SECRET,
     gcsBucket: value.GCS_BUCKET,
     gcsProjectId: value.GCS_PROJECT_ID,
-    corsOrigin: value.CORS_ORIGIN
+    corsOrigin: value.CORS_ORIGIN,
+    googleClientId: value.GOOGLE_CLIENT_ID
   };
 }
 

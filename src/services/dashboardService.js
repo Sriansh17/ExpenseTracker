@@ -13,9 +13,9 @@ async function getOverview(userId, query = {}) {
     start = range.start;
     end = range.end;
   }
-  const [balance, monthlySpend, breakdown, recent, topMerchants, recurringTransactions] = await Promise.all([queries.getTotalBalance(userId), queries.getMonthlySpend(userId, start, end), queries.getCategoryBreakdown(userId, start, end), queries.getRecentTransactions(userId), queries.getTopMerchants(userId, start, end), queries.getRecurringTransactions(userId)]);
+  const [balance, monthlySpend, monthlyIncome, breakdown, recent, topMerchants, recurringTransactions] = await Promise.all([queries.getTotalBalance(userId), queries.getMonthlySpend(userId, start, end), queries.getMonthlyIncome(userId, start, end), queries.getCategoryBreakdown(userId, start, end), queries.getRecentTransactions(userId), queries.getTopMerchants(userId, start, end), queries.getRecurringTransactions(userId)]);
   const total = breakdown.reduce((sum, item) => sum + Number(item.amount), 0);
-  return { balance: Number(balance), monthlySpend: Number(monthlySpend), categoryBreakdown: breakdown.map((item) => ({ ...item, amount: Number(item.amount), percentage: total ? Number((Number(item.amount) * 100 / total).toFixed(2)) : 0 })), recentTransactions: recent, topMerchants, recurringTransactions };
+  return { balance: Number(balance), monthlySpend: Number(monthlySpend), monthlyIncome: Number(monthlyIncome), categoryBreakdown: breakdown.map((item) => ({ ...item, amount: Number(item.amount), percentage: total ? Number((Number(item.amount) * 100 / total).toFixed(2)) : 0 })), recentTransactions: recent, topMerchants, recurringTransactions };
 }
 async function getChartData(userId, query) {
   if (query.month && !query.startDate && !query.endDate) {

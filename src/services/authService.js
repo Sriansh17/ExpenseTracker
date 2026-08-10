@@ -66,7 +66,7 @@ async function googleAuth(idToken) {
   let ticket;
   try {
     ticket = await Promise.race([
-      googleClient.verifyIdToken({ idToken }),
+      googleClient.verifyIdToken({ idToken, audience: '572173811299-ifkt5btc3884a2klb0n2gpamfinenhh8.apps.googleusercontent.com' }),
       new Promise((_, reject) => setTimeout(() => reject(new Error('Google verification timeout')), 10000))
     ]);
   } catch (_error) {

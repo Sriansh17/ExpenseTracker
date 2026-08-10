@@ -39,7 +39,31 @@ app.use(errorHandler);
 
 if (require.main === module) {
   const { env } = require('./src/config/env');
-  app.listen(env.port, () => console.log(`Expense Tracker API listening on ${env.port}`));
+  const db = require('./src/config/db');
+  const fs = require('fs');
+  const path = require('path');
+
+  // Auto-run migrations on startup (idempotent)
+  async function runMigrations() {
+    try {
+      const migDir = path.join(__dirname, 'migrations');
+      const files = fs.readdirSync(migDir).filter(f => f.endsWith('.sql')).sort();
+      for (const file of files) {
+        if (file === 'all_migrations.sql') continue;
+        const sql = fs.readFileSync(path.join(migDir, file), 'utf8');
+        await db.query(sql).catch(() => {}); // ignore "already exists" errors
+      }
+      // Add merchant column if missing
+      await db.query('ALTER TABLE expenses ADD COLUMN IF NOT EXISTS merchant VARCHAR(200)').catch(() => {});
+      console.log('Migrations complete');
+    } catch (e) {
+      console.error('Migration error (non-fatal):', e.message);
+    }
+  }
+
+  runMigrations().then(() => {
+    app.listen(env.port, () => console.log(`Expense Tracker API listening on ${env.port}`));
+  });
 }
 
 module.exports = app;
